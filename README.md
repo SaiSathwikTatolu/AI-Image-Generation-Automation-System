@@ -96,9 +96,9 @@ If unsafe content is detected, the request is blocked and the user receives a wa
 
 ## Output 
 
-![Generated Output](Image%20Generated@%20Successfully.png)
+![Generated Output](Generated%20output.png)
 
-## Data Logs
+## Data Storage
 
 ![Data Storage](Data%20storage.png)
 
