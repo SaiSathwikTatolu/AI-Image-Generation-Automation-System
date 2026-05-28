@@ -1,0 +1,577 @@
+{
+  "name": "AI Image Generation Automation System",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        16
+      ],
+      "id": "f58c3017-7daf-4f0c-aa33-627285b8315a",
+      "name": "Telegram Trigger",
+      "webhookId": "2f7a668f-817f-439d-962d-f940c0c680ac",
+      "credentials": {
+        "telegramApi": {
+          "id": "r2N9c3dPQbLDx4vG",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2b53b7f0-8d62-4e98-9645-52b6443d278b",
+              "name": "message.from.id",
+              "value": "={{ $json.message.from.id }}",
+              "type": "number"
+            },
+            {
+              "id": "e1fc0bb5-9a4e-4e09-83a6-c3c7b2e56f2a",
+              "name": "message.from.first_name",
+              "value": "={{ $json.message.from.first_name }}",
+              "type": "string"
+            },
+            {
+              "id": "74360de5-249e-481d-84e9-217f82b7f0ab",
+              "name": "message.chat.id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "975b1347-11fd-41a7-b3a3-f062123a8284",
+              "name": "message.text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "2321a32c-d916-4279-b857-442bc152a2f5",
+              "name": "message.date",
+              "value": "={{ $json.message.date }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        16
+      ],
+      "id": "9d21c4fb-996e-4c91-85d0-0154e5598fdc",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "53212871-0812-4e13-8711-4a56e2fc0571",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "57d7923b-5544-44ae-923f-cac4b494ec62",
+              "leftValue": "={{ $json.message.text ? $json.message.text.trim().length : 0 }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        16
+      ],
+      "id": "07ca906b-866a-40e3-8b07-fc0cc8f501da",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Edit Fields').item.json.message.chat.id }}",
+        "text": "Message should not Empty or too short",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        656,
+        208
+      ],
+      "id": "ed668829-bbe3-479f-9772-b93f77a8c048",
+      "name": "Send a text message",
+      "webhookId": "a8b53392-1b92-4239-addd-a28c8ae43dfe",
+      "credentials": {
+        "telegramApi": {
+          "id": "r2N9c3dPQbLDx4vG",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fda2d534-577a-4b3c-b22e-a09c50e2ed2d",
+              "leftValue": "={{ !/rape|sex|nude|porn|child abuse|weapon|gun|kill|murder|terror|drugs/i.test($json.message.text || '') }}",
+              "rightValue": "=",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        -96
+      ],
+      "id": "fc62409e-0dfd-4b2e-8091-56235c9862ec",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a highly detailed cinematic AI image generation prompt while preserving the exact subject requested by the user.\n\nUser Request:\n{{ $json.message.text }}\n",
+        "options": {
+          "systemMessage": "You are a professional AI image prompt engineering assistant specialized in generating concise, high-quality cinematic prompts for AI image generation models.\n\nYour task is to transform user requests into visually rich prompts while STRICTLY preserving the original subject, intent, and category.\n\nCORE RULES:\n\n* Never change the user's main subject\n* Never replace objects with humans\n* Never generate people or portraits unless explicitly requested\n* Preserve the exact object category requested by the user\n* Keep the requested subject as the central focus\n* Do not hallucinate unrelated elements\n* Do not add extra characters, people, or scenes unless requested\n\nSUBJECT LOCKING:\n\n* Flowers → flowers only\n* Cars → cars only\n* Animals → animals only\n* Landscapes → landscapes only\n* Objects → objects only\n* Food → food only\n\nVISUAL ENHANCEMENT GOALS:\n\n* Ultra realistic quality\n* Cinematic lighting\n* Professional composition\n* Realistic textures\n* Atmospheric depth\n* Sharp focus\n* Depth of field\n* Macro photography when relevant\n* Soft bokeh backgrounds when relevant\n* Rich color grading\n* 8k detailed realism\n\nPROMPT STYLE:\n\n* Keep prompts concise and clean\n* Maximum 250 characters preferred\n* Avoid unnecessary storytelling\n* Avoid conversational text\n* Avoid repetition\n* Optimize for modern diffusion image models\n\nOUTPUT RULES:\n\n* Return ONLY the final enhanced prompt\n* No explanations\n* No labels\n* No markdown\n* No quotes\n* No bullet points\n\nSAFETY:\nIf the request contains unsafe, explicit, illegal, violent, hateful, or restricted content, return exactly:\nRestricted content detected\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        928,
+        -352
+      ],
+      "id": "39461523-6dbd-4a66-bf0b-1189de7786c0",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        -144
+      ],
+      "id": "018bfc46-5c1e-441f-9fdc-dfbecd559ef3",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0ahtO1sARivFkaTx",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ \n\"https://image.pollinations.ai/prompt/\" + \nencodeURIComponent($('AI Agent1').item.json.output) + \n\"?model=flux&seed=\" + Date.now()\n}}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1440,
+        -112
+      ],
+      "id": "32e8682e-3c0e-4fb3-a5e0-b2dcdb357ed2",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Restricted content Detected. Please try a valid prompt",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        64
+      ],
+      "id": "806864e7-87ea-4729-871e-8c977cb52dce",
+      "name": "Send a text message1",
+      "webhookId": "cad9ccef-84fe-4da8-9a1e-65cf7cd37c40",
+      "credentials": {
+        "telegramApi": {
+          "id": "r2N9c3dPQbLDx4vG",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1616,
+        -160
+      ],
+      "id": "b0c5658b-ffca-48f1-bad9-7935d2c16730",
+      "name": "Send a photo message1",
+      "webhookId": "787bc298-d494-4674-b32d-084590681565",
+      "credentials": {
+        "telegramApi": {
+          "id": "r2N9c3dPQbLDx4vG",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.result.chat.id }}",
+        "text": "Image generated Successfully !",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1840,
+        16
+      ],
+      "id": "789cb9e0-1ada-4edd-8934-2838adb85e31",
+      "name": "Send a text message3",
+      "webhookId": "faa731d0-313a-4e4c-9da7-f1df443075ed",
+      "credentials": {
+        "telegramApi": {
+          "id": "r2N9c3dPQbLDx4vG",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "🎨 Generating your image...",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1248,
+        -208
+      ],
+      "id": "6d023a12-221d-415b-8438-4f35f0c8d954",
+      "name": "Send a text message2",
+      "webhookId": "b7b5d5a9-cc0d-4081-bd4b-1b8835810d76",
+      "credentials": {
+        "telegramApi": {
+          "id": "r2N9c3dPQbLDx4vG",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1k4JFOe6hf2rMo2hfEKstInas3Rb7UYlXDj_0ZrQp0Xw",
+          "mode": "list",
+          "cachedResultName": "AI Image Log Analytics",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1k4JFOe6hf2rMo2hfEKstInas3Rb7UYlXDj_0ZrQp0Xw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1k4JFOe6hf2rMo2hfEKstInas3Rb7UYlXDj_0ZrQp0Xw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ new Date().toLocaleString('en-IN', {\n  day: '2-digit',\n  month: 'short',\n  year: 'numeric',\n  hour: '2-digit',\n  minute: '2-digit',\n  second: '2-digit',\n  hour12: true\n}) }}",
+            "UserID": "={{ $json.result.from.id }}",
+            "Username": "={{ $('Telegram Trigger').item.json.message.from.first_name }}",
+            "Prompt": "={{ $('Telegram Trigger').item.json.message.text }}",
+            "Image URL": "={{ \n\"https://image.pollinations.ai/prompt/\" + \nencodeURIComponent($('AI Agent1').item.json.output.slice(0, 250)) + \n\"?model=flux&width=1024&height=1024&seed=\" + Date.now() + \"&nologo=true\"\n}}",
+            "Status": "={{  $('If1').item.json ?  \"Generated Successfully\" :  \"Blocked - Restricted Content\" }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "UserID",
+              "displayName": "UserID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Username",
+              "displayName": "Username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Prompt",
+              "displayName": "Prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Image URL",
+              "displayName": "Image URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2048,
+        16
+      ],
+      "id": "96c58dad-4947-4377-ba5d-68ccb3617364",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FOGqMm58V8SkQTj8",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message1": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a photo message1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message3": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "fc5b0493-5ebf-4493-86ef-98dfcee6c179",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7f766db04fc4948070aa2fb2d271a41e0b7703d99533dbc4c9b0acdfd7e842e1"
+  },
+  "id": "LSzwDjJuhMeZMKuU",
+  "tags": []
+}
