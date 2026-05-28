@@ -84,18 +84,19 @@ If unsafe content is detected, the request is blocked and the user receives a wa
 
 ## Workflow Architecture
 
+![Workflow Architecture](workflow-architecture.png)
 
+## Demo
 
+🎥 [Watch Project Demo](Demo.mp4)
 
+## n8n Workflow
 
+![n8n Workflow](AI Image Generation automation system workflow.png)
 
+## Output 
 
-
-
-
-
-
-## Demo 
+![Generated Output](Image Generated Successfully.png)
 
 
 
