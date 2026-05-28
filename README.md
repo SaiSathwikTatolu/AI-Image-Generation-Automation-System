@@ -92,13 +92,15 @@ If unsafe content is detected, the request is blocked and the user receives a wa
 
 ## n8n Workflow
 
-![n8n Workflow](AI Image Generation automation system workflow.png)
+![n8n Workflow](AI%20Image%20Generation%20automation%20system%20workflow.png)
 
 ## Output 
 
-![Generated Output](Image Generated Successfully.png)
+![Generated Output](Image%20Generated@%20Successfully.png)
 
+## Data Logs
 
+![Data Storage](Data%20storage.png)
 
 
 
