@@ -103,68 +103,6 @@ If unsafe content is detected, the request is blocked and the user receives a wa
 ![Data Storage](Data%20storage.png)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Result
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Data storage
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Challenges Solved
 
 1.Automated the complete AI image generation workflow
